@@ -1,103 +1,139 @@
-import Image from "next/image";
+"use client"
+
+import { useState } from "react"
+import { Upload, Star, ImageIcon } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import Logo from "@/components/logo"
+import ImageUploader from "@/components/image-uploader"
+import ProcessingOptions from "@/components/processing-options"
+import OutputDisplay from "@/components/output-display"
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null)
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [processedImage, setProcessedImage] = useState<string | null>(null)
+  const [selectedUpscale, setSelectedUpscale] = useState<"2x" | "4x" | null>(null)
+  const [selectedAspectRatio, setSelectedAspectRatio] = useState<"portrait" | "landscape" | null>(null)
+  const [repaintPrompt, setRepaintPrompt] = useState("")
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const handleImageUpload = (imageDataUrl: string) => {
+    setUploadedImage(imageDataUrl)
+    setProcessedImage(null)
+  }
+
+  const handleProcessImage = () => {
+    if (!uploadedImage || (!selectedUpscale && !selectedAspectRatio)) return
+
+    setIsProcessing(true)
+
+    // Simulate processing delay
+    setTimeout(() => {
+      setProcessedImage(uploadedImage) // In a real app, this would be the processed image
+      setIsProcessing(false)
+    }, 2000)
+  }
+
+  const isProcessButtonDisabled =
+    !uploadedImage || (!selectedUpscale && !selectedAspectRatio) || (selectedAspectRatio && !repaintPrompt)
+
+  return (
+    <main className="min-h-screen bg-gradient-to-b from-black to-gray-900 text-white">
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex justify-center mb-8"
+        >
+          <Logo />
+        </motion.div>
+
+        <motion.h1
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+          className="text-3xl md:text-4xl font-bold text-center mb-12"
+        >
+          Galaxy Image Enhancer
+        </motion.h1>
+
+        <div className="space-y-8">
+          {/* Image Upload Section */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
+            className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <h2 className="text-xl font-semibold mb-4 flex items-center">
+              <Upload className="mr-2 text-teal-400" size={20} />
+              Upload Your Image
+            </h2>
+            <ImageUploader onImageUpload={handleImageUpload} uploadedImage={uploadedImage} />
+          </motion.section>
+
+          {/* Processing Options Section */}
+          <AnimatePresence>
+            {uploadedImage && (
+              <motion.section
+                initial={{ opacity: 0, height: 0, y: 20 }}
+                animate={{ opacity: 1, height: "auto", y: 0 }}
+                exit={{ opacity: 0, height: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 overflow-hidden"
+              >
+                <h2 className="text-xl font-semibold mb-4 flex items-center">
+                  <Star className="mr-2 text-teal-400" size={20} />
+                  Processing Options
+                </h2>
+                <ProcessingOptions
+                  selectedUpscale={selectedUpscale}
+                  setSelectedUpscale={setSelectedUpscale}
+                  selectedAspectRatio={selectedAspectRatio}
+                  setSelectedAspectRatio={setSelectedAspectRatio}
+                  repaintPrompt={repaintPrompt}
+                  setRepaintPrompt={setRepaintPrompt}
+                />
+
+                <div className="mt-6 flex justify-center">
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 ${
+                      isProcessButtonDisabled
+                        ? "bg-gray-600 cursor-not-allowed"
+                        : "bg-gradient-to-r from-blue-600 to-teal-400 hover:from-blue-500 hover:to-teal-300"
+                    }`}
+                    disabled={isProcessButtonDisabled || undefined}
+                    onClick={handleProcessImage}
+                  >
+                    Process Image
+                  </motion.button>
+                </div>
+              </motion.section>
+            )}
+          </AnimatePresence>
+
+          {/* Output Display Section */}
+          <AnimatePresence>
+            {(uploadedImage || isProcessing || processedImage) && (
+              <motion.section
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700"
+              >
+                <h2 className="text-xl font-semibold mb-4 flex items-center">
+                  <ImageIcon className="mr-2 text-teal-400" size={20} />
+                  Result
+                </h2>
+                <OutputDisplay isProcessing={isProcessing} processedImage={processedImage} />
+              </motion.section>
+            )}
+          </AnimatePresence>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+      </div>
+    </main>
+  )
 }
