@@ -7,6 +7,7 @@ import Logo from "@/components/logo"
 import ImageUploader from "@/components/image-uploader"
 import ProcessingOptions from "@/components/processing-options"
 import OutputDisplay from "@/components/output-display"
+import { upscaleImage, outpaintImage } from "@/lib/api"
 
 export default function Home() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
@@ -15,22 +16,55 @@ export default function Home() {
   const [selectedUpscale, setSelectedUpscale] = useState<"2x" | "4x" | null>(null)
   const [selectedAspectRatio, setSelectedAspectRatio] = useState<"portrait" | "landscape" | null>(null)
   const [repaintPrompt, setRepaintPrompt] = useState("")
+  const [error, setError] = useState<string | null>(null)
 
   const handleImageUpload = (imageDataUrl: string) => {
     setUploadedImage(imageDataUrl)
     setProcessedImage(null)
   }
 
-  const handleProcessImage = () => {
+  const handleProcessImage = async () => {
     if (!uploadedImage || (!selectedUpscale && !selectedAspectRatio)) return
 
     setIsProcessing(true)
+    setError(null)
 
-    // Simulate processing delay
-    setTimeout(() => {
-      setProcessedImage(uploadedImage) // In a real app, this would be the processed image
-      setIsProcessing(false)
-    }, 2000)
+    try {
+      // Determine which process to use based on user selection
+      if (selectedUpscale) {
+        // Handle upscaling
+        const scaleFactor = selectedUpscale === "2x" ? "2" : "4";
+        const result = await upscaleImage(uploadedImage, {
+          scaleFactor: scaleFactor as "2" | "4",
+          faceEnhance: false
+        });
+
+        if (result.success) {
+          setProcessedImage(result.imageData || null);
+        } else {
+          setError(result.error);
+        }
+      } else if (selectedAspectRatio) {
+        // Handle outpainting
+        const scaleFactor = "4";
+        const padding = selectedAspectRatio === "landscape" ? "128" : "64";
+        
+        const result = await outpaintImage(uploadedImage, {
+          scaleFactor: scaleFactor as "2" | "4",
+          padding: padding
+        });
+
+        if (result.success) {
+          setProcessedImage(result.imageData || null);
+        } else {
+          setError(result.error);
+        }
+      }
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred");
+    } finally {
+      setIsProcessing(false);
+    }
   }
 
   const isProcessButtonDisabled =
@@ -93,6 +127,8 @@ export default function Home() {
                   setSelectedAspectRatio={setSelectedAspectRatio}
                   repaintPrompt={repaintPrompt}
                   setRepaintPrompt={setRepaintPrompt}
+                  faceEnhance={false}
+                  setFaceEnhance={() => {}}
                 />
 
                 <div className="mt-6 flex justify-center">
@@ -129,6 +165,15 @@ export default function Home() {
                   Result
                 </h2>
                 <OutputDisplay isProcessing={isProcessing} processedImage={processedImage} />
+          {error && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="mt-4 p-3 bg-red-900/50 border border-red-700 rounded-md text-red-200 text-center"
+            >
+              {error}
+            </motion.div>
+          )}
               </motion.section>
             )}
           </AnimatePresence>

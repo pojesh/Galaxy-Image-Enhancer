@@ -1,24 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Galaxy Image Enhancer
+
+A Next.js application that enhances images using AI-powered upscaling and outpainting techniques. This application integrates with a Flask backend API for image processing.
+
+## Features
+
+- **Image Upscaling**: Increase image resolution by 2x or 4x with AI enhancement
+- **Face Enhancement**: Optionally improve facial details in upscaled images
+- **Image Outpainting**: Expand image boundaries in portrait or landscape orientation
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 16.x or higher
+- Backend API server running on http://localhost:5000
+
+### Frontend Setup
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Backend Integration
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This application integrates with a Flask backend API that provides image processing capabilities. The backend API endpoints are:
+
+- `POST /upscale` - For image upscaling with options for scale factor, output scale, and face enhancement
+- `POST /outpaint` - For image outpainting with options for scale factor, output scale, and padding
+
+The integration is handled by the API service in `lib/api.ts`, which provides functions for:
+
+- `upscaleImage()` - Sends images to the upscaling endpoint
+- `outpaintImage()` - Sends images to the outpainting endpoint
+
+Both functions handle the conversion of data URLs to file objects, form data creation, and error handling.
+
+### Usage
+
+1. Upload an image using drag-and-drop or the file selector
+2. Choose processing options:
+   - For upscaling: Select 2x or 4x and optionally enable face enhancement
+   - For outpainting: Select portrait or landscape orientation
+3. Click "Process Image" to send the image to the backend for processing
+4. View and download the processed image
+
+### Troubleshooting
+
+- If you encounter connection errors, ensure the backend server is running on port 5000
+- For image processing errors, check the backend server logs for more details
+- Large images may take longer to process; be patient during the processing stage
 
 ## Learn More
 
