@@ -127,8 +127,7 @@ export default function Home() {
                   setSelectedAspectRatio={setSelectedAspectRatio}
                   repaintPrompt={repaintPrompt}
                   setRepaintPrompt={setRepaintPrompt}
-                  faceEnhance={false}
-                  setFaceEnhance={() => {}}
+                // Remove faceEnhance and setFaceEnhance properties
                 />
 
                 <div className="mt-6 flex justify-center">

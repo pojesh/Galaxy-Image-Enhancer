@@ -8,8 +8,7 @@ interface ProcessingOptionsProps {
   setSelectedAspectRatio: (value: "portrait" | "landscape" | null) => void
   repaintPrompt: string
   setRepaintPrompt: (value: string) => void
-  faceEnhance?: boolean
-  setFaceEnhance?: (value: boolean) => void
+  // Remove faceEnhance and setFaceEnhance properties
 }
 
 export default function ProcessingOptions({
@@ -19,8 +18,6 @@ export default function ProcessingOptions({
   setSelectedAspectRatio,
   repaintPrompt,
   setRepaintPrompt,
-  faceEnhance = false,
-  setFaceEnhance = () => {},
 }: ProcessingOptionsProps) {
   const handleUpscaleSelect = (value: "2x" | "4x") => {
     if (selectedUpscale === value) {
@@ -57,20 +54,7 @@ export default function ProcessingOptions({
             onClick={() => handleUpscaleSelect("4x")}
           />
         </div>
-        
-        {selectedUpscale && (
-          <div className="mt-3">
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={faceEnhance}
-                onChange={(e) => setFaceEnhance(e.target.checked)}
-                className="w-4 h-4 rounded border-gray-700 bg-gray-800 text-blue-500 focus:ring-blue-500"
-              />
-              <span className="text-sm text-gray-300">Enhance faces (if present)</span>
-            </label>
-          </div>
-        )}
+        {/* Remove face enhancement checkbox */}
       </div>
 
       {/* Aspect Ratio Conversion */}
