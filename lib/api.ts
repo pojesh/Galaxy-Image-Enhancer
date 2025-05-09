@@ -29,7 +29,7 @@ export async function upscaleImage(imageData: string, options: {
   formData.append('face_enhance', faceEnhance.toString());
   
   try {
-    const response = await fetch('http://localhost:5000/upscale', {
+    const response = await fetch('http://localhost:8000/upscale', {
       method: 'POST',
       body: formData,
     });
@@ -82,7 +82,7 @@ export async function outpaintImage(imageData: string, options: {
   formData.append('padding', padding);
   
   try {
-    const response = await fetch('http://localhost:5000/outpaint', {
+    const response = await fetch('http://localhost:8000/outpaint', {
       method: 'POST',
       body: formData,
     });
