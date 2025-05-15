@@ -5,7 +5,6 @@ A Next.js application that enhances images using AI-powered upscaling and outpai
 ## Features
 
 - **Image Upscaling**: Increase image resolution by 2x or 4x with AI enhancement
-- **Face Enhancement**: Optionally improve facial details in upscaled images
 - **Image Outpainting**: Expand image boundaries in portrait or landscape orientation
 
 ## Getting Started
@@ -13,7 +12,7 @@ A Next.js application that enhances images using AI-powered upscaling and outpai
 ### Prerequisites
 
 - Node.js 16.x or higher
-- Backend API server running on http://localhost:5000
+- Backend API server running on http://localhost:8000
 
 ### Frontend Setup
 
