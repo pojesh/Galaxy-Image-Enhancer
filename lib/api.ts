@@ -11,12 +11,10 @@
 export async function upscaleImage(imageData: string, options: {
   scaleFactor: '2' | '4';
   outscale?: string;
-  faceEnhance?: boolean;
 }) {
   const {
     scaleFactor = '4',
-    outscale = scaleFactor === '2' ? '2.0' : '4.0',
-    faceEnhance = false
+    outscale = scaleFactor === '2' ? '2.0' : '4.0'
   } = options;
 
   // Convert data URL to File object
@@ -26,7 +24,6 @@ export async function upscaleImage(imageData: string, options: {
   formData.append('image', imageFile);
   formData.append('scale_factor', scaleFactor);
   formData.append('outscale', outscale);
-  formData.append('face_enhance', faceEnhance.toString());
   
   try {
     const response = await fetch('http://localhost:8000/upscale', {
@@ -62,14 +59,10 @@ export async function upscaleImage(imageData: string, options: {
  * @param options - Configuration options for outpainting
  */
 export async function outpaintImage(imageData: string, options: {
-  scaleFactor: '2' | '4';
-  outscale?: string;
-  padding?: string;
+  format: 'l2p' | 'p2l';
 }) {
   const {
-    scaleFactor = '4',
-    outscale = '1.0',
-    padding = '64'
+    format = 'l2p'
   } = options;
 
   // Convert data URL to File object
@@ -77,9 +70,7 @@ export async function outpaintImage(imageData: string, options: {
   
   const formData = new FormData();
   formData.append('image', imageFile);
-  formData.append('scale_factor', scaleFactor);
-  formData.append('outscale', outscale);
-  formData.append('padding', padding);
+  formData.append('format', format);
   
   try {
     const response = await fetch('http://localhost:8000/outpaint', {

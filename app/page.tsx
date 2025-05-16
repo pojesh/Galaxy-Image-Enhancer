@@ -14,8 +14,7 @@ export default function Home() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [processedImage, setProcessedImage] = useState<string | null>(null)
   const [selectedUpscale, setSelectedUpscale] = useState<"2x" | "4x" | null>(null)
-  const [selectedAspectRatio, setSelectedAspectRatio] = useState<"portrait" | "landscape" | null>(null)
-  const [repaintPrompt, setRepaintPrompt] = useState("")
+  const [selectedAspectRatio, setSelectedAspectRatio] = useState<"l2p" | "p2l" | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const handleImageUpload = (imageDataUrl: string) => {
@@ -35,8 +34,7 @@ export default function Home() {
         // Handle upscaling
         const scaleFactor = selectedUpscale === "2x" ? "2" : "4";
         const result = await upscaleImage(uploadedImage, {
-          scaleFactor: scaleFactor as "2" | "4",
-          faceEnhance: false
+          scaleFactor: scaleFactor as "2" | "4"
         });
 
         if (result.success) {
@@ -46,12 +44,10 @@ export default function Home() {
         }
       } else if (selectedAspectRatio) {
         // Handle outpainting
-        const scaleFactor = "4";
-        const padding = selectedAspectRatio === "landscape" ? "128" : "64";
+        const format = selectedAspectRatio;
         
         const result = await outpaintImage(uploadedImage, {
-          scaleFactor: scaleFactor as "2" | "4",
-          padding: padding
+          format : format
         });
 
         if (result.success) {
@@ -68,7 +64,7 @@ export default function Home() {
   }
 
   const isProcessButtonDisabled =
-    !uploadedImage || (!selectedUpscale && !selectedAspectRatio) || (selectedAspectRatio && !repaintPrompt)
+    !uploadedImage || (!selectedUpscale && !selectedAspectRatio)
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-black to-gray-900 text-white">
@@ -125,8 +121,6 @@ export default function Home() {
                   setSelectedUpscale={setSelectedUpscale}
                   selectedAspectRatio={selectedAspectRatio}
                   setSelectedAspectRatio={setSelectedAspectRatio}
-                  repaintPrompt={repaintPrompt}
-                  setRepaintPrompt={setRepaintPrompt}
                 // Remove faceEnhance and setFaceEnhance properties
                 />
 

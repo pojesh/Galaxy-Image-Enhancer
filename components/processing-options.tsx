@@ -4,11 +4,9 @@ import { motion, AnimatePresence } from "framer-motion"
 interface ProcessingOptionsProps {
   selectedUpscale: "2x" | "4x" | null
   setSelectedUpscale: (value: "2x" | "4x" | null) => void
-  selectedAspectRatio: "portrait" | "landscape" | null
-  setSelectedAspectRatio: (value: "portrait" | "landscape" | null) => void
-  repaintPrompt: string
-  setRepaintPrompt: (value: string) => void
-  // Remove faceEnhance and setFaceEnhance properties
+  selectedAspectRatio: "l2p" | "p2l" | null
+  setSelectedAspectRatio: (value: "l2p" | "p2l" | null) => void
+
 }
 
 export default function ProcessingOptions({
@@ -16,8 +14,6 @@ export default function ProcessingOptions({
   setSelectedUpscale,
   selectedAspectRatio,
   setSelectedAspectRatio,
-  repaintPrompt,
-  setRepaintPrompt,
 }: ProcessingOptionsProps) {
   const handleUpscaleSelect = (value: "2x" | "4x") => {
     if (selectedUpscale === value) {
@@ -27,7 +23,7 @@ export default function ProcessingOptions({
     }
   }
 
-  const handleAspectRatioSelect = (value: "portrait" | "landscape") => {
+  const handleAspectRatioSelect = (value: "l2p" | "p2l") => {
     if (selectedAspectRatio === value) {
       setSelectedAspectRatio(null)
     } else {
@@ -64,42 +60,18 @@ export default function ProcessingOptions({
           <OptionCard
             title="Portrait to Landscape"
             description="Add content to the sides"
-            isSelected={selectedAspectRatio === "landscape"}
-            onClick={() => handleAspectRatioSelect("landscape")}
+            isSelected={selectedAspectRatio === "p2l"}
+            onClick={() => handleAspectRatioSelect("p2l")}
           />
           <OptionCard
             title="Landscape to Portrait"
             description="Add content to top/bottom"
-            isSelected={selectedAspectRatio === "portrait"}
-            onClick={() => handleAspectRatioSelect("portrait")}
+            isSelected={selectedAspectRatio === "l2p"}
+            onClick={() => handleAspectRatioSelect("l2p")}
           />
         </div>
 
-        <AnimatePresence>
-          {selectedAspectRatio && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="overflow-hidden"
-            >
-              <div className="mt-3">
-                <label htmlFor="prompt" className="block text-sm font-medium text-gray-300 mb-1">
-                  Enter prompt for repainted area
-                </label>
-                <input
-                  type="text"
-                  id="prompt"
-                  value={repaintPrompt}
-                  onChange={(e) => setRepaintPrompt(e.target.value)}
-                  placeholder="Describe what should be added to the extended areas..."
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all duration-200"
-                />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Removed AnimatePresence block for repaint prompt */}
       </div>
     </div>
   )
