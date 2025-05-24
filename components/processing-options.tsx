@@ -1,35 +1,53 @@
 "use client"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
+import { Input } from "@/components/ui/input"
 
 interface ProcessingOptionsProps {
   selectedUpscale: "2x" | "4x" | null
   setSelectedUpscale: (value: "2x" | "4x" | null) => void
-  selectedAspectRatio: "l2p" | "p2l" | null
-  setSelectedAspectRatio: (value: "l2p" | "p2l" | null) => void
-
+  outpaintWidth: number | null
+  setOutpaintWidth: (value: number | null) => void
+  outpaintHeight: number | null
+  setOutpaintHeight: (value: number | null) => void
+  // Removed selectedAspectRatio and setSelectedAspectRatio
 }
 
 export default function ProcessingOptions({
   selectedUpscale,
   setSelectedUpscale,
-  selectedAspectRatio,
-  setSelectedAspectRatio,
+  outpaintWidth,
+  setOutpaintWidth,
+  outpaintHeight,
+  setOutpaintHeight,
 }: ProcessingOptionsProps) {
   const handleUpscaleSelect = (value: "2x" | "4x") => {
     if (selectedUpscale === value) {
       setSelectedUpscale(null)
+      // When an upscale option is selected, clear outpaint dimensions
+      setOutpaintWidth(null)
+      setOutpaintHeight(null)
     } else {
       setSelectedUpscale(value)
+      setOutpaintWidth(null)
+      setOutpaintHeight(null)
     }
   }
 
-  const handleAspectRatioSelect = (value: "l2p" | "p2l") => {
-    if (selectedAspectRatio === value) {
-      setSelectedAspectRatio(null)
-    } else {
-      setSelectedAspectRatio(value)
+  const handleWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value ? parseInt(e.target.value, 10) : null;
+    setOutpaintWidth(value);
+    if (value !== null && outpaintHeight !== null) {
+      setSelectedUpscale(null); // Clear upscale if dimensions are set
     }
-  }
+  };
+
+  const handleHeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value ? parseInt(e.target.value, 10) : null;
+    setOutpaintHeight(value);
+    if (value !== null && outpaintWidth !== null) {
+      setSelectedUpscale(null); // Clear upscale if dimensions are set
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -50,28 +68,49 @@ export default function ProcessingOptions({
             onClick={() => handleUpscaleSelect("4x")}
           />
         </div>
-        {/* Remove face enhancement checkbox */}
       </div>
 
-      {/* Aspect Ratio Conversion */}
+      {/* Outpainting Options - Replaced Aspect Ratio Conversion */}
       <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-700">
-        <h3 className="text-lg font-medium mb-3">Convert Aspect Ratio (Repaint)</h3>
-        <div className="grid grid-cols-2 gap-3 mb-4">
-          <OptionCard
-            title="Portrait to Landscape"
-            description="Add content to the sides"
-            isSelected={selectedAspectRatio === "p2l"}
-            onClick={() => handleAspectRatioSelect("p2l")}
-          />
-          <OptionCard
-            title="Landscape to Portrait"
-            description="Add content to top/bottom"
-            isSelected={selectedAspectRatio === "l2p"}
-            onClick={() => handleAspectRatioSelect("l2p")}
-          />
+        <h3 className="text-lg font-medium mb-3">Outpaint Image (Custom Dimensions)</h3>
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <label htmlFor="outpaintWidth" className="block text-sm font-medium text-gray-300 mb-1">
+              Width (px)
+            </label>
+            <Input
+              id="outpaintWidth"
+              type="number"
+              placeholder="e.g., 1024"
+              value={outpaintWidth === null ? "" : outpaintWidth}
+              onChange={handleWidthChange}
+              className="bg-gray-800 border-gray-600 text-white placeholder-gray-500 focus:ring-teal-500 focus:border-teal-500"
+            />
+          </div>
+          <div>
+            <label htmlFor="outpaintHeight" className="block text-sm font-medium text-gray-300 mb-1">
+              Height (px)
+            </label>
+            <Input
+              id="outpaintHeight"
+              type="number"
+              placeholder="e.g., 768"
+              value={outpaintHeight === null ? "" : outpaintHeight}
+              onChange={handleHeightChange}
+              className="bg-gray-800 border-gray-600 text-white placeholder-gray-500 focus:ring-teal-500 focus:border-teal-500"
+            />
+          </div>
         </div>
-
-        {/* Removed AnimatePresence block for repaint prompt */}
+         {outpaintWidth !== null && outpaintHeight !== null && (
+          <p className="text-xs text-gray-400">
+            Outpainting to {outpaintWidth}px x {outpaintHeight}px. Upscaling will be disabled.
+          </p>
+        )}
+        {selectedUpscale && (outpaintWidth !== null || outpaintHeight !== null) && (
+            <p className="text-xs text-yellow-400">
+                Clear width/height to enable upscaling, or select an upscale option to clear width/height.
+            </p>
+        )}
       </div>
     </div>
   )
@@ -90,15 +129,11 @@ function OptionCard({ title, description, isSelected, onClick }: OptionCardProps
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className={`relative cursor-pointer rounded-lg p-3 border transition-all duration-200 ${
-        isSelected ? "border-teal-400 bg-teal-400/10" : "border-gray-600 hover:border-gray-500"
-      }`}
+      className={`relative cursor-pointer rounded-lg p-3 border transition-all duration-200 ${isSelected ? "border-teal-400 bg-teal-400/10" : "border-gray-600 hover:border-gray-500"}`}
     >
       <div className="flex items-start">
         <div
-          className={`w-4 h-4 rounded-full mr-2 mt-1 border-2 flex-shrink-0 ${
-            isSelected ? "border-teal-400 bg-teal-400" : "border-gray-500"
-          }`}
+          className={`w-4 h-4 rounded-full mr-2 mt-1 border-2 flex-shrink-0 ${isSelected ? "border-teal-400 bg-teal-400" : "border-gray-500"}`}
         >
           {isSelected && (
             <motion.div

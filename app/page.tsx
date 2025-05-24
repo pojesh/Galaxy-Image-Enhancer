@@ -14,42 +14,45 @@ export default function Home() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [processedImage, setProcessedImage] = useState<string | null>(null)
   const [selectedUpscale, setSelectedUpscale] = useState<"2x" | "4x" | null>(null)
-  const [selectedAspectRatio, setSelectedAspectRatio] = useState<"l2p" | "p2l" | null>(null)
+  // Removed selectedAspectRatio, added outpaintWidth and outpaintHeight
+  const [outpaintWidth, setOutpaintWidth] = useState<number | null>(null);
+  const [outpaintHeight, setOutpaintHeight] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null)
 
   const handleImageUpload = (imageDataUrl: string) => {
     setUploadedImage(imageDataUrl)
     setProcessedImage(null)
+    // Reset options on new image upload
+    setSelectedUpscale(null)
+    setOutpaintWidth(null)
+    setOutpaintHeight(null)
+    setError(null)
   }
 
   const handleProcessImage = async () => {
-    if (!uploadedImage || (!selectedUpscale && !selectedAspectRatio)) return
+    if (!uploadedImage) return;
+    if (!selectedUpscale && (outpaintWidth === null || outpaintHeight === null)) return;
 
     setIsProcessing(true)
     setError(null)
 
     try {
-      // Determine which process to use based on user selection
       if (selectedUpscale) {
-        // Handle upscaling
         const scaleFactor = selectedUpscale === "2x" ? "2" : "4";
         const result = await upscaleImage(uploadedImage, {
           scaleFactor: scaleFactor as "2" | "4"
         });
-
         if (result.success) {
           setProcessedImage(result.imageData || null);
         } else {
           setError(result.error);
         }
-      } else if (selectedAspectRatio) {
-        // Handle outpainting
-        const format = selectedAspectRatio;
-        
+      } else if (outpaintWidth !== null && outpaintHeight !== null) {
+        // Use outpaintWidth and outpaintHeight for outpainting
         const result = await outpaintImage(uploadedImage, {
-          format : format
+          width: outpaintWidth,
+          height: outpaintHeight
         });
-
         if (result.success) {
           setProcessedImage(result.imageData || null);
         } else {
@@ -64,7 +67,7 @@ export default function Home() {
   }
 
   const isProcessButtonDisabled =
-    !uploadedImage || (!selectedUpscale && !selectedAspectRatio)
+    !uploadedImage || (!selectedUpscale && (outpaintWidth === null || outpaintHeight === null));
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-black to-gray-900 text-white">
@@ -119,20 +122,20 @@ export default function Home() {
                 <ProcessingOptions
                   selectedUpscale={selectedUpscale}
                   setSelectedUpscale={setSelectedUpscale}
-                  selectedAspectRatio={selectedAspectRatio}
-                  setSelectedAspectRatio={setSelectedAspectRatio}
-                // Remove faceEnhance and setFaceEnhance properties
+                  outpaintWidth={outpaintWidth}
+                  setOutpaintWidth={setOutpaintWidth}
+                  outpaintHeight={outpaintHeight}
+                  setOutpaintHeight={setOutpaintHeight}
                 />
 
                 <div className="mt-6 flex justify-center">
                   <motion.button
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 ${
-                      isProcessButtonDisabled
+                    className={`px-6 py-3 rounded-lg font-medium transition-colors duration-300 ${isProcessButtonDisabled
                         ? "bg-gray-600 cursor-not-allowed"
                         : "bg-gradient-to-r from-blue-600 to-teal-400 hover:from-blue-500 hover:to-teal-300"
-                    }`}
+                      }`}
                     disabled={isProcessButtonDisabled || undefined}
                     onClick={handleProcessImage}
                   >
@@ -158,15 +161,15 @@ export default function Home() {
                   Result
                 </h2>
                 <OutputDisplay isProcessing={isProcessing} processedImage={processedImage} />
-          {error && (
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="mt-4 p-3 bg-red-900/50 border border-red-700 rounded-md text-red-200 text-center"
-            >
-              {error}
-            </motion.div>
-          )}
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="mt-4 p-3 bg-red-900/50 border border-red-700 rounded-md text-red-200 text-center"
+                  >
+                    {error}
+                  </motion.div>
+                )}
               </motion.section>
             )}
           </AnimatePresence>

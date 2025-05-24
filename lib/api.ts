@@ -59,10 +59,12 @@ export async function upscaleImage(imageData: string, options: {
  * @param options - Configuration options for outpainting
  */
 export async function outpaintImage(imageData: string, options: {
-  format: 'l2p' | 'p2l';
+  width?: number;
+  height?: number;
 }) {
   const {
-    format = 'l2p'
+    width = 1920,
+    height = 1080
   } = options;
 
   // Convert data URL to File object
@@ -70,7 +72,8 @@ export async function outpaintImage(imageData: string, options: {
   
   const formData = new FormData();
   formData.append('image', imageFile);
-  formData.append('format', format);
+  formData.append('target_width', width.toString());
+  formData.append('target_height', height.toString());
   
   try {
     const response = await fetch('http://localhost:8000/outpaint', {
