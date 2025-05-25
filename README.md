@@ -11,9 +11,9 @@ A Next.js application that enhances images using AI-powered upscaling and outpai
 
 ## Screenshots
 ![Image Processing Options](screenshots/processing_options.png)
-| Original Image | Outpainted Result |
+| Original Image(846x635) | Outpainted Result(1920x1080) |
 |:---:|:---:|
-| ![Original Image(846x635)](screenshots/hike_original.jpg) | ![Outpainted Image(1920x1080)](screenshots/hike_outpainted.jpg) |
+| ![Original Image](screenshots/hike_original.jpg) | ![Outpainted Image](screenshots/hike_outpainted.jpg) |
 
 
 ## Getting Started
