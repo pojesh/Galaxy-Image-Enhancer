@@ -35,7 +35,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ### Backend Integration
 
-This application integrates with a Flask backend API that provides image processing capabilities. The backend API endpoints are:
+This application integrates with a Fast backend API that provides image processing capabilities. The backend API endpoints are:
 
 - `POST /upscale` - For image upscaling with options for scale factor, output scale
 - `POST /outpaint` - For image outpainting with options for target width and height
