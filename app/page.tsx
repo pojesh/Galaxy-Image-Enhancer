@@ -17,10 +17,25 @@ export default function Home() {
   // Removed selectedAspectRatio, added outpaintWidth and outpaintHeight
   const [outpaintWidth, setOutpaintWidth] = useState<number | null>(null);
   const [outpaintHeight, setOutpaintHeight] = useState<number | null>(null);
+  const [originalImageWidth, setOriginalImageWidth] = useState<number | null>(null);
+  const [originalImageHeight, setOriginalImageHeight] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null)
 
-  const handleImageUpload = (imageDataUrl: string) => {
+  const handleImageUpload = (imageDataUrl: string, width?: number, height?: number) => {
+    if (!imageDataUrl) {
+      setUploadedImage(null);
+      setOriginalImageWidth(null);
+      setOriginalImageHeight(null);
+      setProcessedImage(null)
+      setSelectedUpscale(null)
+      setOutpaintWidth(null)
+      setOutpaintHeight(null)
+      setError(null)
+      return;
+    }
     setUploadedImage(imageDataUrl)
+    setOriginalImageWidth(width || null);
+    setOriginalImageHeight(height || null);
     setProcessedImage(null)
     // Reset options on new image upload
     setSelectedUpscale(null)
@@ -126,6 +141,8 @@ export default function Home() {
                   setOutpaintWidth={setOutpaintWidth}
                   outpaintHeight={outpaintHeight}
                   setOutpaintHeight={setOutpaintHeight}
+                  originalImageWidth={originalImageWidth}
+                  originalImageHeight={originalImageHeight}
                 />
 
                 <div className="mt-6 flex justify-center">

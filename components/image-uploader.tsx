@@ -7,7 +7,7 @@ import { Upload, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 
 interface ImageUploaderProps {
-  onImageUpload: (imageDataUrl: string) => void
+  onImageUpload: (imageDataUrl: string, width?: number, height?: number) => void
   uploadedImage: string | null
 }
 
@@ -67,10 +67,20 @@ export default function ImageUploader({ onImageUpload, uploadedImage }: ImageUpl
 
     reader.onload = (e) => {
       if (e.target?.result) {
-        onImageUpload(e.target.result as string)
-        setTimeout(() => setUploadProgress(0), 500)
+        const imageDataUrl = e.target.result as string;
+        const img = new Image();
+        img.onload = () => {
+          onImageUpload(imageDataUrl, img.naturalWidth, img.naturalHeight);
+          setTimeout(() => setUploadProgress(0), 500); // Keep existing progress logic
+        };
+        img.onerror = () => {
+          // Handle potential error in loading image, maybe call onImageUpload without dimensions
+          onImageUpload(imageDataUrl); // Or some error state
+          setTimeout(() => setUploadProgress(0), 500);
+        };
+        img.src = imageDataUrl;
       }
-    }
+    };
 
     reader.readAsDataURL(file)
   }
@@ -80,7 +90,7 @@ export default function ImageUploader({ onImageUpload, uploadedImage }: ImageUpl
   }
 
   const handleRemoveImage = () => {
-    onImageUpload("")
+    onImageUpload("", undefined, undefined)
   }
 
   return (

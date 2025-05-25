@@ -9,6 +9,8 @@ interface ProcessingOptionsProps {
   setOutpaintWidth: (value: number | null) => void
   outpaintHeight: number | null
   setOutpaintHeight: (value: number | null) => void
+  originalImageWidth?: number | null;
+  originalImageHeight?: number | null;
   // Removed selectedAspectRatio and setSelectedAspectRatio
 }
 
@@ -19,6 +21,8 @@ export default function ProcessingOptions({
   setOutpaintWidth,
   outpaintHeight,
   setOutpaintHeight,
+  originalImageWidth,
+  originalImageHeight,
 }: ProcessingOptionsProps) {
   const handleUpscaleSelect = (value: "2x" | "4x") => {
     if (selectedUpscale === value) {
@@ -81,7 +85,7 @@ export default function ProcessingOptions({
             <Input
               id="outpaintWidth"
               type="number"
-              placeholder="e.g., 1024"
+              placeholder={originalImageWidth ? String(originalImageWidth) : "width"}
               value={outpaintWidth === null ? "" : outpaintWidth}
               onChange={handleWidthChange}
               className="bg-gray-800 border-gray-600 text-white placeholder-gray-500 focus:ring-teal-500 focus:border-teal-500"
@@ -94,7 +98,7 @@ export default function ProcessingOptions({
             <Input
               id="outpaintHeight"
               type="number"
-              placeholder="e.g., 768"
+              placeholder={originalImageHeight ? String(originalImageHeight) : "height"}
               value={outpaintHeight === null ? "" : outpaintHeight}
               onChange={handleHeightChange}
               className="bg-gray-800 border-gray-600 text-white placeholder-gray-500 focus:ring-teal-500 focus:border-teal-500"
