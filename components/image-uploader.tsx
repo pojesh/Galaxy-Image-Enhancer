@@ -69,7 +69,7 @@ export default function ImageUploader({ onImageUpload, uploadedImage }: ImageUpl
     reader.onload = (e) => {
       if (e.target?.result) {
         const imageDataUrl = e.target.result as string;
-        const img = new Image();
+        const img = new window.Image();
         img.onload = () => {
           onImageUpload(imageDataUrl, img.naturalWidth, img.naturalHeight);
           setTimeout(() => setUploadProgress(0), 500); // Keep existing progress logic
