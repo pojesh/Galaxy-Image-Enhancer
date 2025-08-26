@@ -74,8 +74,9 @@ export default function Home() {
           setError(result.error);
         }
       }
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "An unexpected error occurred";
+      setError(message);
     } finally {
       setIsProcessing(false);
     }
