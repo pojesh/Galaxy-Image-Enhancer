@@ -44,11 +44,12 @@ export async function upscaleImage(imageData: string, options: {
         error: data.error || 'Unknown error occurred'
       };
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error upscaling image:', error);
+    const message = error instanceof Error ? error.message : 'Failed to connect to the server';
     return {
       success: false,
-      error: error.message || 'Failed to connect to the server'
+      error: message,
     };
   }
 }
@@ -94,11 +95,12 @@ export async function outpaintImage(imageData: string, options: {
         error: data.error || 'Unknown error occurred'
       };
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error outpainting image:', error);
+    const message = error instanceof Error ? error.message : 'Failed to connect to the server';
     return {
       success: false,
-      error: error.message || 'Failed to connect to the server'
+      error: message,
     };
   }
 }
