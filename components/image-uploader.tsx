@@ -2,6 +2,7 @@
 
 import type React from "react"
 
+import Image from "next/image"
 import { useState, useRef } from "react"
 import { Upload, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -141,10 +142,11 @@ export default function ImageUploader({ onImageUpload, uploadedImage }: ImageUpl
               animate={{ opacity: 1, scale: 1 }}
               className="relative w-32 h-32 rounded-lg overflow-hidden border border-gray-700"
             >
-              <img
+              <Image
                 src={uploadedImage || "/placeholder.svg"}
                 alt="Uploaded preview"
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
               />
               <button
                 onClick={(e) => {

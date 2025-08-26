@@ -1,4 +1,5 @@
 "use client"
+import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { Download } from "lucide-react"
 
@@ -51,12 +52,13 @@ export default function OutputDisplay({ isProcessing, processedImage }: OutputDi
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="w-full h-full"
+              className="w-full h-full relative"
             >
-              <img
+              <Image
                 src={processedImage || "/placeholder.svg"}
                 alt="Processed result"
-                className="w-full h-full object-contain"
+                fill
+                className="object-contain"
               />
             </motion.div>
           ) : (
